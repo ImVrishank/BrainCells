@@ -2,49 +2,67 @@ import torch
 
 """output_size is the number of neurons of the lth layer and input size is the number of layers in the (l-1)th layer."""
 
+def relu(z, derivative = False):
+        if derivative:
+            return (z>0).float()
+        return z if z>0 else 0
 
+def mse(pred, target, derivative = False):
+    if derivative:
+        return 2 * (pred - target) / target.size(0)
+    return ((pred - target) ** 2).mean()
 
 class Layers():
     def __init__(self, input_size = None, output_size=None):
-        self.input_size = input_size
-        self.output_size = output_size
-        self.weights = torch.randn(input_size, output_size)  # Initialize weights randomly
+        self.weights = torch.randn(input_size, output_size) * 0.01  # Initialize weights randomly
         self.bias = torch.randn(output_size)  # Initialize bias randomly
         self.activation = torch.zeros(output_size)  # Initialize activation to zero
 
-    def sigmoid(self, z):
-        return 1/(1-torch.exp(-z))
-
-
-    def ff(self, previous_layer_activations):
-        self.activation = self.sigmoid(previous_layer_activations @ self.weights.T + self.bias)
+        def forward(self, previous_layer_activations):
+            self.activation = relu(previous_layer_activations @ self.weights.T + self.bias)
+            return self.activations
         
 
-
-class NeuralNetwork(Layers):
-    def __init__(self, number_of_layers, features, labels, input_size, output_size, neurons_per_layer):
-        super.__init__(input_size, output_size)
-        self.number_of_layers = number_of_layers
-        self.features = features
-        self.labels = labels
-        self.hidden_layers = [] 
-        self.neurons_per_layer = neurons_per_layer
-        self.n = features.shape[1]
-        self.m = features.shape[0]
-        self.all_layers = []
-        self.input_layer = None
-        self.output_layer = None
-
-    def making_layers(self):
-        self.input_layer = Layers(output_size=self.n)
-        for i in range(1, self.number_of_layers-1):
-            self.hidden_layers.append(Layers(self.neurons_per_layer[i-1], self.neurons_per_layer[i]))
-        self.output_layer = Layers(self.neurons_per_layer[-2], self.neurons_per_layer[-1])    
-        self.all_layers = [self.input_layer,*(self.hidden_layers), self.output_layer]
-
-
-    def calculation_of_activations(self):
-        for i in range(1, self.number_of_layers):
-            self.all_layers[i].ff(self.all_layers[i-1].activations)
-
+class NeuralNetwork():
+    def __init__(self, features, labels):
+        self.layers = []
+        
+    def add(self, layer): # layer is an object of the Layer class, initialize it then pass it in.
+        self.layers.append(layer)
     
+    def feed_forward(self, x):
+        for layer in self.layers:
+            x = layer.forward(x) # for every iteration, x resets to a new value sent after calculation in forward function of Layers class
+        return x 
+
+
+
+
+
+model = NeuralNetwork(features=[1,2,3,4,4], labels=[1,0,1,1,0])
+model.add(Layers(2,4))
+model.add(Layers(3,2))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
