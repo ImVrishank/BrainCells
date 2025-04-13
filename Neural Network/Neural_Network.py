@@ -1,7 +1,5 @@
 import torch
 
-"""output_size is the number of neurons of the lth layer and input size is the number of layers in the (l-1)th layer."""
-
 # hyperparameters
 epochs = 1000
 
@@ -46,20 +44,7 @@ class Layers():
 
         self.weights -= lr * grad_w # SGD formula
         self.bias -= lr * grad_b # SGD formula
-
-
-
-
-
-
-
-# backpropagate once every 32 training examples.
-# calculate values of error every iteration.
-# while calling backpropagate, remember that it gives 2 returns
-# while checking for the last layer's errors, do not give weights, rest of time give it
-        
-
-        
+       
 
 class NeuralNetwork():
     def __init__(self, features, labels, learning_rate):
@@ -97,9 +82,6 @@ class NeuralNetwork():
 
 
 # train the model
-# Define our training data:
-# features: 5 examples each with 1 feature -> shape [5, 1]
-# labels: 5 examples each with 1 output -> shape [5, 1]
 features = torch.tensor([[1.0], [2.0], [3.0], [4.0], [4.0]])
 labels = torch.tensor([[1.0], [0.0], [1.0], [1.0], [0.0]])
 
@@ -108,9 +90,6 @@ model = NeuralNetwork(features=features,
                         labels=labels,
                         learning_rate=0.01)
 
-# Add layers:
-# For example, first layer: input_size = 1, output_size = 4
-# Second (output) layer: input_size = 4, output_size = 1
 model.add(Layers(1, 4))
 model.add(Layers(4, 1))
 
