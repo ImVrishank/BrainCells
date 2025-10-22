@@ -1,6 +1,8 @@
 #include <torch/torch.h>
 #include <iostream>
 #include<utility>
+#include<vector>
+
 
 
 torch::Tensor relu(torch::Tensor z, bool derivative = false){
@@ -52,6 +54,55 @@ class Layer{
             this->weights = this->weights - lr * grad_w;
             this->bias = this->bias - lr * grad_b;
         }
+};
+
+
+class NeuralNetwork{
+
+    public:
+        torch::Tensor X_train;
+        torch::Tensor Y_train;
+        double learning_rate;
+        std::vector<Layer> layers;
+        double cost;
+
+        NeuralNetwork(torch::Tensor features, torch::Tensor labels, double learning_rate){
+                this->X_train = features;
+                this->Y_train = labels;
+                this->learning_rate = learning_rate;
+                this->cost = 0;
+        }
+
+        void add(layer){
+            // layer is an object of the Layer class, initialize it and pass it in.
+            this->layers.push_back(layer);
+        }
+
+        torch::Tensor feed_forward(torch::Tensor X){
+            // X at first is the set of features
+
+            for(Layer layer : this->layers){
+                X = layer.forward(X);
+            }
+
+            return X;
+        }
+
+        void backpropagation(torch::Tensor Y){
+
+            this->layers[layers.size() - 1].calc_backpropagation(last_layer=true, Y=Y);
+
+            for(int i=(this->layers.size() - 2); i>-1; i--){
+                auto next_layer = self.layers[i+1];
+                this->layers[i].calc_backpropagation(next_layer_errors=next_layer.error, next_layer_weights=next_layer_weights);
+            }
+
+            for(int i = 0; i<layers.size(); i++){
+                auto intput_ = (i==0) ? this->X_train : self.layers[i-1].activation;
+                self.layers[i].SGD(input_, this->learning_rate);
+            }
+        }            
+                              
 };
 
 int main() {
